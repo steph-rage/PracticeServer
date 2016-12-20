@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Test Creator</title>
@@ -10,3 +10,10 @@
 			<input type='text' name='question'/>
 			<input type='submit'/>
 		</form>
+		<ol>
+			{% for question in questions %}
+				<li>{{ question }}</li>
+			{% endfor %}
+		</ol>
+	</body>
+</html>

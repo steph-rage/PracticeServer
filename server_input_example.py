@@ -1,17 +1,16 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib import parse
+from jinja2 import Template
 
 questions = []
-html_footer = "</body></html>"
 
 class Handler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		self.send_response(200)
 		self.end_headers()
 		with open('input_questions.html', 'r') as html_file:
-			html = html_file.read() 
-			html += html_footer
-			self.wfile.write(bytes(html, 'utf8'))
+			html = Template(html_file.read()).render()
+		self.wfile.write(bytes(html, 'utf8'))
 		return
 
 	def do_POST(self):
@@ -22,14 +21,10 @@ class Handler(BaseHTTPRequestHandler):
 		#decode into utf8, parse using urllib, then split for just the question text
 		new_question = parse.unquote_plus(self.rfile.read(int(self.headers.get('content-length'))).decode('utf8')).split('=')
 		questions.append(new_question[1])
+		template_vars = {"questions": questions}
 		with open('input_questions.html', 'r') as html_file:
-			html = html_file.read()
-			html += "<ol>"
-			for question in questions:
-				html += "<li>{}</li>".format(question)
-			html += "</ol>"
-			html += html_footer
-			self.wfile.write(bytes(html, 'utf8'))
+			html = Template(html_file.read()).render(template_vars)
+		self.wfile.write(bytes(html, 'utf8'))
 		return
 
 
